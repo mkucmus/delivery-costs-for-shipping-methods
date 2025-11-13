@@ -1,0 +1,42 @@
+{
+    "openapi": "3.0.0",
+    "info": {},
+    "paths": {
+        "/checkout/cart": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "includeAvailableShippingMethods",
+                        "in": "query",
+                        "description": "Include all available shipping methods with their calculated costs in the cart response",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "example": true
+                    }
+                ]
+            },
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "includeAvailableShippingMethods": {
+                                        "type": "boolean",
+                                        "description": "Include all available shipping methods with their calculated costs in the cart response",
+                                        "default": false,
+                                        "example": true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

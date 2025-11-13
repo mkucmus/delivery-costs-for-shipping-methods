@@ -1,0 +1,35 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"title": "LineItem Schema Extension",
+		"description": "Extends the LineItem schema with custom properties",
+		"version": "1.0.0"
+	},
+	"paths": {},
+	"components": {
+		"schemas": {
+			"LineItem": {
+				"type": "object",
+				"properties": {
+					"payload": {
+						"type": "object",
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/ProductJsonApi"
+							},
+							{
+								"type": "object",
+								"properties": {
+									"someNewProperty": {
+										"type": "string",
+										"description": "A custom property added to the LineItem payload"
+									}
+								}
+							}
+						]
+					}
+				}
+			}
+		}
+	}
+}

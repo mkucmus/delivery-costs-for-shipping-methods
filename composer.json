@@ -1,0 +1,19 @@
+{
+    "name": "custom/cart-extension",
+    "description": "Extends the Cart Store API with all available shipping methods and their costs",
+    "type": "shopware-platform-plugin",
+    "license": "MIT",
+    "version": "1.0.0",
+    "autoload": {
+        "psr-4": {
+            "Custom\\CartExtension\\": "src/"
+        }
+    },
+    "extra": {
+        "shopware-plugin-class": "Custom\\CartExtension\\CartExtension",
+        "label": {
+            "en-GB": "Cart Extension",
+            "de-DE": "Warenkorb Erweiterung"
+        }
+    }
+}

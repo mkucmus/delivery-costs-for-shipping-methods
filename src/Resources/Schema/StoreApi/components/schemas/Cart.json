@@ -1,0 +1,62 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Cart Extension",
+        "description": "Extends the Cart schema with all available shipping methods and their costs",
+        "version": "1.0.0"
+    },
+    "paths": {},
+    "components": {
+        "schemas": {
+            "Cart": {
+                "type": "object",
+                "properties": {
+                    "extensions": {
+                        "type": "object",
+                        "properties": {
+                            "availableShippingMethods": {
+                                "type": "array",
+                                "description": "All available shipping methods with their calculated costs for the current cart",
+                                "items": {
+                                    "$ref": "#/components/schemas/ShippingMethodWithCost"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ShippingMethodWithCost": {
+                "type": "object",
+                "required": ["shippingMethod", "selected", "available"],
+                "properties": {
+                    "shippingMethod": {
+                        "$ref": "#/components/schemas/ShippingMethod"
+                    },
+                    "calculatedPrice": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/CalculatedPrice"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "description": "The calculated shipping cost for this method based on the current cart. Null if not available or calculation failed."
+                    },
+                    "selected": {
+                        "type": "boolean",
+                        "description": "Whether this shipping method is currently selected"
+                    },
+                    "available": {
+                        "type": "boolean",
+                        "description": "Whether this shipping method is available based on cart rules and context"
+                    },
+                    "apiAlias": {
+                        "type": "string",
+                        "enum": ["shipping_method_with_cost"]
+                    }
+                }
+            }
+        }
+    }
+}
