@@ -89,9 +89,55 @@ bin/console cache:clear
 
 ## Usage
 
-### Query Parameter
+This plugin provides **two ways** to get shipping methods with costs:
 
-To include all available shipping methods with costs, add the `includeAvailableShippingMethods` parameter:
+### Option 1: Dedicated Endpoint (Recommended)
+
+Use the dedicated endpoint `/store-api/shipping-methods-with-costs` to fetch shipping methods with costs independently:
+
+**GET Request:**
+```
+GET /store-api/shipping-methods-with-costs
+```
+
+**POST Request:**
+```json
+POST /store-api/shipping-methods-with-costs
+{
+  "token": "optional-cart-token"
+}
+```
+
+**Response:**
+```json
+{
+  "elements": [
+    {
+      "shippingMethod": {
+        "id": "79ef7bea9b7d49fb9d32b235fb18aa18",
+        "name": "Express",
+        "technicalName": "shipping_express",
+        "deliveryTime": {...}
+      },
+      "calculatedPrice": {
+        "unitPrice": 5.90,
+        "totalPrice": 5.90,
+        "quantity": 1,
+        "calculatedTaxes": [...],
+        "taxRules": [...]
+      },
+      "selected": true,
+      "available": true,
+      "apiAlias": "shipping_method_with_cost"
+    }
+  ],
+  "apiAlias": "shipping_method_with_cost_collection"
+}
+```
+
+### Option 2: Cart Endpoint Extension
+
+To include all available shipping methods with costs in the cart response, add the `includeAvailableShippingMethods` parameter:
 
 **GET Request:**
 ```
@@ -106,10 +152,40 @@ POST /store-api/checkout/cart
 }
 ```
 
-### Example: Fetch cart with all shipping methods
+### Code Examples
+
+#### Example 1: Using the dedicated endpoint (Recommended)
 
 ```javascript
-// Using query parameter
+// Fetch shipping methods with costs independently
+const response = await fetch('/store-api/shipping-methods-with-costs', {
+  method: 'GET',
+  headers: {
+    'sw-access-key': 'YOUR_ACCESS_KEY'
+  }
+});
+
+const data = await response.json();
+const shippingMethods = data.elements;
+
+// Display shipping options to user
+shippingMethods.forEach(method => {
+  const price = method.calculatedPrice?.totalPrice || 'N/A';
+  const currency = method.calculatedPrice ? '€' : '';
+
+  console.log(`${method.shippingMethod.name}: ${price} ${currency}`);
+  console.log(`Available: ${method.available}, Selected: ${method.selected}`);
+
+  if (method.selected) {
+    console.log('✓ Currently selected');
+  }
+});
+```
+
+#### Example 2: Using cart endpoint extension
+
+```javascript
+// Fetch cart with shipping methods included
 const response = await fetch('/store-api/checkout/cart?includeAvailableShippingMethods=1', {
   method: 'GET',
   headers: {
@@ -131,48 +207,57 @@ if (cart.extensions?.availableShippingMethods) {
 }
 ```
 
-### Example: Regular cart fetch (without shipping methods)
+### When to Use Which Approach?
 
-```javascript
-// Without parameter - no extra calculation overhead
-const response = await fetch('/store-api/checkout/cart', {
-  method: 'GET',
-  headers: {
-    'sw-access-key': 'YOUR_ACCESS_KEY'
-  }
-});
+**Use the dedicated endpoint (`/store-api/shipping-methods-with-costs`):**
+- ✅ When you only need shipping methods (e.g., standalone shipping selector)
+- ✅ When you want cleaner separation of concerns
+- ✅ When building a dedicated shipping selection page
+- ✅ For lighter API responses
 
-const { cart } = await response.json();
-// cart.extensions.availableShippingMethods will not be present
-```
+**Use the cart extension (`?includeAvailableShippingMethods=1`):**
+- ✅ When you need both cart data AND shipping methods in one call
+- ✅ On checkout pages where cart and shipping are displayed together
+- ✅ To reduce total number of API calls
 
 ## Benefits
 
-- **On-Demand Calculation**: Only calculates when needed via query parameter - no performance impact on regular cart loads
+- **Two Flexible Approaches**: Dedicated endpoint OR cart extension - choose what fits your use case
+- **On-Demand Calculation**: Only calculates when needed - no performance impact on regular cart loads
 - **No Multiple API Calls**: Previously, you needed to switch shipping methods and recalculate the cart multiple times to get all costs
 - **Better UX**: Users can see all shipping options with prices upfront
 - **Accurate Pricing**: Uses the same calculation logic as the core cart
 - **Rule-Aware**: Respects availability rules and cart conditions
+- **Context-Aware**: Uses current cart, session, and customer context for accurate calculations
 
 ## Technical Details
 
 ### Components
 
-1. **AllShippingCostsCalculator**: Service that calculates shipping costs for all available methods
-2. **CartLoadRouteDecorator**: Decorates the cart load route to add the new data
-3. **ShippingMethodWithCost**: Struct representing a shipping method with its calculated cost
-4. **OpenAPI Schema**: Documents the new API structure
+1. **ShippingMethodsWithCostsRoute**: Dedicated Store API endpoint for fetching shipping methods with costs
+2. **AllShippingCostsCalculator**: Service that calculates shipping costs for all available methods
+3. **CartLoadRouteDecorator**: Decorates the cart load route to optionally add shipping methods
+4. **ShippingMethodWithCost**: Struct representing a shipping method with its calculated cost
+5. **ShippingMethodWithCostCollection**: Collection of shipping methods with costs
+6. **OpenAPI Schema**: Documents both endpoints in the API structure
 
 ### How It Works
 
+**Dedicated Endpoint (`/store-api/shipping-methods-with-costs`):**
+1. Receives request with optional cart token
+2. Loads the current cart (or creates empty cart)
+3. Fetches all active shipping methods
+4. For each method:
+   - Checks availability based on rules
+   - Creates a temporary delivery with cart items
+   - Calculates the shipping cost using the core `DeliveryCalculator`
+5. Returns collection of shipping methods with calculated costs
+
+**Cart Extension Approach:**
 1. When the cart is loaded, the decorator intercepts the response
 2. If `includeAvailableShippingMethods` parameter is present and true:
-   - It fetches all active shipping methods
-   - For each method, it:
-     - Checks availability based on rules
-     - Creates a temporary delivery
-     - Calculates the shipping cost using the core `DeliveryCalculator`
-   - The results are added to the cart extensions
+   - Uses the same calculation logic as the dedicated endpoint
+   - Adds results to cart extensions
 3. If the parameter is not present, the cart response is returned immediately without extra processing
 
 ## Requirements
