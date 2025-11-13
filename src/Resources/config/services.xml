@@ -25,6 +25,7 @@
             <argument type="service" id="Shopware\Core\Checkout\Cart\CartPersister"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\CartFactory"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\CartCalculator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Shipping\ShippingMethodDefinition"/>
             <tag name="controller.service_arguments"/>
         </service>
     </services>

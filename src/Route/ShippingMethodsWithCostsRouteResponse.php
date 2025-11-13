@@ -3,22 +3,23 @@
 namespace Custom\CartExtension\Route;
 
 use Custom\CartExtension\Struct\ShippingMethodWithCostCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\StoreApiResponse;
 
 #[Package('checkout')]
 class ShippingMethodsWithCostsRouteResponse extends StoreApiResponse
 {
-    public function __construct(ShippingMethodWithCostCollection $shippingMethods)
+    public function __construct(EntitySearchResult $result)
     {
-        parent::__construct($shippingMethods);
+        parent::__construct($result);
     }
 
     public function getShippingMethods(): ShippingMethodWithCostCollection
     {
-        /** @var ShippingMethodWithCostCollection $object */
-        $object = $this->object;
+        /** @var ShippingMethodWithCostCollection $entities */
+        $entities = $this->object->getEntities();
 
-        return $object;
+        return $entities;
     }
 }

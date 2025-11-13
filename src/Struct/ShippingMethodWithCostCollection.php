@@ -2,12 +2,12 @@
 
 namespace Custom\CartExtension\Struct;
 
-use Shopware\Core\Framework\Struct\Collection;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**
- * @extends Collection<ShippingMethodWithCost>
+ * @extends EntityCollection<ShippingMethodWithCost>
  */
-class ShippingMethodWithCostCollection extends Collection
+class ShippingMethodWithCostCollection extends EntityCollection
 {
     public function getApiAlias(): string
     {

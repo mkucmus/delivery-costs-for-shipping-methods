@@ -8,6 +8,10 @@ use Shopware\Core\Checkout\Cart\CartCalculator;
 use Shopware\Core\Checkout\Cart\CartFactory;
 use Shopware\Core\Checkout\Cart\CartPersister;
 use Shopware\Core\Checkout\Cart\Exception\CartTokenNotFoundException;
+use Shopware\Core\Checkout\Shipping\ShippingMethodDefinition;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\StoreApiRouteScope;
@@ -24,7 +28,8 @@ class ShippingMethodsWithCostsRoute extends AbstractShippingMethodsWithCostsRout
         private readonly AllShippingCostsCalculator $shippingCostsCalculator,
         private readonly CartPersister $persister,
         private readonly CartFactory $cartFactory,
-        private readonly CartCalculator $cartCalculator
+        private readonly CartCalculator $cartCalculator,
+        private readonly ShippingMethodDefinition $shippingMethodDefinition
     ) {
     }
 
@@ -46,7 +51,17 @@ class ShippingMethodsWithCostsRoute extends AbstractShippingMethodsWithCostsRout
         // Calculate shipping costs for all available methods
         $shippingMethods = $this->shippingCostsCalculator->calculate($cart, $context);
 
-        return new ShippingMethodsWithCostsRouteResponse($shippingMethods);
+        // Create EntitySearchResult to match standard Shopware response format
+        $result = new EntitySearchResult(
+            $this->shippingMethodDefinition->getEntityName(),
+            $shippingMethods->count(),
+            $shippingMethods,
+            null,
+            new Criteria(),
+            $context->getContext()
+        );
+
+        return new ShippingMethodsWithCostsRouteResponse($result);
     }
 
     private function getCart(Request $request, SalesChannelContext $context): Cart
