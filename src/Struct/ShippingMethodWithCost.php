@@ -11,7 +11,7 @@ class ShippingMethodWithCost extends ShippingMethodEntity
     protected bool $selected = false;
     protected bool $available = false;
 
-    public static function createFrom(
+    public static function createFromShippingMethod(
         ShippingMethodEntity $shippingMethod,
         ?CalculatedPrice $calculatedPrice,
         bool $selected,

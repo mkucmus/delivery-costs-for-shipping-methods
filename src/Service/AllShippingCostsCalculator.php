@@ -60,7 +60,7 @@ class AllShippingCostsCalculator
                 $calculatedPrice = $this->calculateShippingCost($cart, $shippingMethod, $context);
             }
 
-            $collection->add(ShippingMethodWithCost::createFrom(
+            $collection->add(ShippingMethodWithCost::createFromShippingMethod(
                 $shippingMethod,
                 $calculatedPrice,
                 $isSelected,
