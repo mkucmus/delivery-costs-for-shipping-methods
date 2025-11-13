@@ -4,21 +4,31 @@ namespace Custom\CartExtension\Struct;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
-use Shopware\Core\Framework\Struct\Struct;
 
-class ShippingMethodWithCost extends Struct
+class ShippingMethodWithCost extends ShippingMethodEntity
 {
-    public function __construct(
-        protected ShippingMethodEntity $shippingMethod,
-        protected ?CalculatedPrice $calculatedPrice,
-        protected bool $selected,
-        protected bool $available
-    ) {
-    }
+    protected ?CalculatedPrice $calculatedPrice = null;
+    protected bool $selected = false;
+    protected bool $available = false;
 
-    public function getShippingMethod(): ShippingMethodEntity
-    {
-        return $this->shippingMethod;
+    public static function createFrom(
+        ShippingMethodEntity $shippingMethod,
+        ?CalculatedPrice $calculatedPrice,
+        bool $selected,
+        bool $available
+    ): self {
+        $instance = new self();
+
+        // Copy all properties from the original shipping method
+        foreach (get_object_vars($shippingMethod) as $key => $value) {
+            $instance->$key = $value;
+        }
+
+        $instance->calculatedPrice = $calculatedPrice;
+        $instance->selected = $selected;
+        $instance->available = $available;
+
+        return $instance;
     }
 
     public function getCalculatedPrice(): ?CalculatedPrice
@@ -26,9 +36,19 @@ class ShippingMethodWithCost extends Struct
         return $this->calculatedPrice;
     }
 
+    public function setCalculatedPrice(?CalculatedPrice $calculatedPrice): void
+    {
+        $this->calculatedPrice = $calculatedPrice;
+    }
+
     public function isSelected(): bool
     {
         return $this->selected;
+    }
+
+    public function setSelected(bool $selected): void
+    {
+        $this->selected = $selected;
     }
 
     public function isAvailable(): bool
@@ -36,8 +56,18 @@ class ShippingMethodWithCost extends Struct
         return $this->available;
     }
 
-    public function getApiAlias(): string
+    public function setAvailable(bool $available): void
     {
-        return 'shipping_method_with_cost';
+        $this->available = $available;
+    }
+
+    public function getVars(): array
+    {
+        $vars = parent::getVars();
+        $vars['calculatedPrice'] = $this->calculatedPrice;
+        $vars['selected'] = $this->selected;
+        $vars['available'] = $this->available;
+
+        return $vars;
     }
 }

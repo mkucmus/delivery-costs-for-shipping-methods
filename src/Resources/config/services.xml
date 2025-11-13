@@ -22,7 +22,7 @@
         <!-- Shipping methods with costs route -->
         <service id="Custom\CartExtension\Route\ShippingMethodsWithCostsRoute" public="true">
             <argument type="service" id="Custom\CartExtension\Service\AllShippingCostsCalculator"/>
-            <argument type="service" id="Shopware\Core\Checkout\Cart\AbstractCartPersister"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\CartPersister"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\CartFactory"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\CartCalculator"/>
             <tag name="controller.service_arguments"/>

@@ -26,36 +26,36 @@
                 }
             },
             "ShippingMethodWithCost": {
-                "type": "object",
-                "required": ["shippingMethod", "selected", "available"],
-                "properties": {
-                    "shippingMethod": {
+                "allOf": [
+                    {
                         "$ref": "#/components/schemas/ShippingMethod"
                     },
-                    "calculatedPrice": {
-                        "oneOf": [
-                            {
-                                "$ref": "#/components/schemas/CalculatedPrice"
+                    {
+                        "type": "object",
+                        "required": ["selected", "available"],
+                        "properties": {
+                            "calculatedPrice": {
+                                "oneOf": [
+                                    {
+                                        "$ref": "#/components/schemas/CalculatedPrice"
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ],
+                                "description": "The calculated shipping cost for this method based on the current cart. Null if not available or calculation failed."
                             },
-                            {
-                                "type": "null"
+                            "selected": {
+                                "type": "boolean",
+                                "description": "Whether this shipping method is currently selected"
+                            },
+                            "available": {
+                                "type": "boolean",
+                                "description": "Whether this shipping method is available based on cart rules and context"
                             }
-                        ],
-                        "description": "The calculated shipping cost for this method based on the current cart. Null if not available or calculation failed."
-                    },
-                    "selected": {
-                        "type": "boolean",
-                        "description": "Whether this shipping method is currently selected"
-                    },
-                    "available": {
-                        "type": "boolean",
-                        "description": "Whether this shipping method is available based on cart rules and context"
-                    },
-                    "apiAlias": {
-                        "type": "string",
-                        "enum": ["shipping_method_with_cost"]
+                        }
                     }
-                }
+                ]
             }
         }
     }

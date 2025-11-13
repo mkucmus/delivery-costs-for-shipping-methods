@@ -3,10 +3,10 @@
 namespace Custom\CartExtension\Route;
 
 use Custom\CartExtension\Service\AllShippingCostsCalculator;
-use Shopware\Core\Checkout\Cart\AbstractCartPersister;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartCalculator;
 use Shopware\Core\Checkout\Cart\CartFactory;
+use Shopware\Core\Checkout\Cart\CartPersister;
 use Shopware\Core\Checkout\Cart\Exception\CartTokenNotFoundException;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
@@ -22,7 +22,7 @@ class ShippingMethodsWithCostsRoute extends AbstractShippingMethodsWithCostsRout
 {
     public function __construct(
         private readonly AllShippingCostsCalculator $shippingCostsCalculator,
-        private readonly AbstractCartPersister $persister,
+        private readonly CartPersister $persister,
         private readonly CartFactory $cartFactory,
         private readonly CartCalculator $cartCalculator
     ) {

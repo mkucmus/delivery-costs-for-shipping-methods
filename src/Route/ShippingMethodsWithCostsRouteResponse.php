@@ -9,11 +9,6 @@ use Shopware\Core\System\SalesChannel\StoreApiResponse;
 #[Package('checkout')]
 class ShippingMethodsWithCostsRouteResponse extends StoreApiResponse
 {
-    /**
-     * @var ShippingMethodWithCostCollection
-     */
-    protected $object;
-
     public function __construct(ShippingMethodWithCostCollection $shippingMethods)
     {
         parent::__construct($shippingMethods);
@@ -21,6 +16,9 @@ class ShippingMethodsWithCostsRouteResponse extends StoreApiResponse
 
     public function getShippingMethods(): ShippingMethodWithCostCollection
     {
-        return $this->object;
+        /** @var ShippingMethodWithCostCollection $object */
+        $object = $this->object;
+
+        return $object;
     }
 }
